@@ -1,9 +1,15 @@
 import { By } from '@angular/platform-browser';
-import { MatSlideToggle } from '@angular/material';
+import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { Store } from '@ngrx/store';
+import { TranslateModule } from '@ngx-translate/core';
 import { provideMockStore, MockStore } from '@ngrx/store/testing';
+import { MemoizedSelector } from '@ngrx/store';
+import {
+  FaIconLibrary,
+  FontAwesomeModule
+} from '@fortawesome/angular-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 
 import { SharedModule } from '../../../shared/shared.module';
 
@@ -15,13 +21,15 @@ import {
   actionSettingsChangeTheme,
   actionSettingsChangeStickyHeader
 } from '../../../core/settings/settings.actions';
-import { TranslateModule } from '@ngx-translate/core';
+import { selectSettings } from '../../../core/settings/settings.selectors';
+import { SettingsState } from '../../../core/settings/settings.model';
 
 describe('SettingsComponent', () => {
   let component: SettingsContainerComponent;
   let fixture: ComponentFixture<SettingsContainerComponent>;
-  let store: MockStore<any>;
+  let store: MockStore;
   let dispatchSpy;
+  let mockSelectSettings: MemoizedSelector<{}, SettingsState>;
 
   const getThemeSelectArrow = () =>
     fixture.debugElement.queryAll(By.css('.mat-select-trigger'))[1];
@@ -30,18 +38,23 @@ describe('SettingsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [SharedModule, NoopAnimationsModule, TranslateModule.forRoot()],
-      providers: [
-        provideMockStore({
-          initialState: {
-            settings: {}
-          }
-        })
+      imports: [
+        FontAwesomeModule,
+        SharedModule,
+        NoopAnimationsModule,
+        TranslateModule.forRoot()
       ],
+      providers: [provideMockStore()],
       declarations: [SettingsContainerComponent]
     }).compileComponents();
 
-    store = TestBed.get(Store);
+    TestBed.inject(FaIconLibrary).addIcons(faBars);
+
+    store = TestBed.inject(MockStore);
+    mockSelectSettings = store.overrideSelector(
+      selectSettings,
+      {} as SettingsState
+    );
     fixture = TestBed.createComponent(SettingsContainerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -120,17 +133,17 @@ describe('SettingsComponent', () => {
   });
 
   it('should disable change animations page when disabled is set in state', () => {
-    store.setState({
-      settings: {
-        pageAnimationsDisabled: true
-      }
-    });
+    mockSelectSettings.setResult({
+      pageAnimationsDisabled: true
+    } as SettingsState);
+    store.refreshState();
     fixture.detectChanges();
 
     dispatchSpy = spyOn(store, 'dispatch');
     const componentDebug = fixture.debugElement;
     const slider = componentDebug.queryAll(By.directive(MatSlideToggle))[2];
 
+    console.log(slider);
     slider.triggerEventHandler('change', { checked: false });
     fixture.detectChanges();
 
