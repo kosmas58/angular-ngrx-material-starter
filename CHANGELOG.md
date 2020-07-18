@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [9.0.1](https://github.com/tomastrajan/angular-ngrx-material-starter/compare/v9.0.0...v9.0.1) (2020-05-05)
+
+### Bug Fixes
+
+- **change-hours:** run change hours interval outside of angular zone ([74ece30](https://github.com/tomastrajan/angular-ngrx-material-starter/commit/74ece301ea5c00d36a4e61ee050453f89a99926f))
+
 ## [9.0.0](https://github.com/tomastrajan/angular-ngrx-material-starter/compare/v8.3.1...v9.0.0) (2020-02-20)
 
 ### ⚠ BREAKING CHANGES
